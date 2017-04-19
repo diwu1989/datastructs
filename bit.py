@@ -3,28 +3,25 @@ class BinaryIndexedTree(object):
     def __init__(self, values):
         super(BinaryIndexedTree, self).__init__()
 
-        self.__tree = [0] + values
+        self._tree = [0] + values
 
         n_len = len(values)
-        for i in xrange(1, n_len):
-            n_idx = i + self.__least_bit(i)
+        for idx in xrange(1, n_len):
+            n_idx = idx + (idx & -idx)
             if n_idx <= n_len:
-                self.__tree[n_idx] += self.__tree[i]
+                self._tree[n_idx] += self._tree[idx]
 
     def prefix_sum(self, idx):
         idx += 1
         s = 0
         while idx:
-            s += self.__tree[idx]
-            idx -= self.__least_bit(idx)
+            s += self._tree[idx]
+            idx -= idx & -idx
         return s
 
     def update(self, idx, v):
         idx += 1
-        delta = v - self.__tree[idx]
-        while idx < len(self.__tree):
-            self.__tree[idx] += delta
-            idx += self.__least_bit(idx)
-
-    def __least_bit(self, idx):
-        return idx & -idx
+        delta = v - self._tree[idx]
+        while idx < len(self._tree):
+            self._tree[idx] += delta
+            idx += idx & -idx
